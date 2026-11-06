@@ -1,0 +1,18 @@
+# Build
+/target/
+
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Environment
+.env
+
+# Crawl output (don't commit downloaded sites)
+*.warc
+.sitegrabber-state

@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>sitegrabber — download entire websites</title>
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0a0a0a;
+    --fg: #e8e8e8;
+    --muted: #666;
+    --code-bg: #141414;
+    --border: #222;
+    --accent: #fff;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* Nav */
+  nav {
+    padding: 24px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  nav .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+  nav a { color: var(--muted); text-decoration: none; font-size: 14px; transition: color .2s; }
+  nav a:hover { color: var(--fg); }
+  .logo { font-weight: 700; font-size: 16px; color: var(--fg); text-decoration: none; letter-spacing: -0.5px; }
+  .nav-links { display: flex; align-items: center; gap: 20px; }
+
+  /* Badge */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 4px 12px 4px 8px;
+    text-decoration: none;
+    transition: all .2s;
+    white-space: nowrap;
+  }
+  .badge:hover { border-color: #444; color: var(--fg); }
+  .badge svg { flex-shrink: 0; }
+
+  /* Hero */
+  .hero {
+    padding: 120px 0 80px;
+    text-align: center;
+  }
+  .hero h1 {
+    font-size: clamp(40px, 7vw, 64px);
+    font-weight: 800;
+    letter-spacing: -2px;
+    line-height: 1.05;
+    color: var(--accent);
+    margin-bottom: 24px;
+  }
+  .hero p {
+    font-size: 18px;
+    color: var(--muted);
+    max-width: 480px;
+    margin: 0 auto 48px;
+    line-height: 1.7;
+  }
+
+  /* Install boxes */
+  .install-group {
+    max-width: 580px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .install {
+    position: relative;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 15px;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color .2s;
+  }
+  .install:hover { border-color: #333; }
+  .install .prompt { color: var(--muted); user-select: none; }
+  .install .cmd { color: var(--fg); }
+  .install .copy {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--muted);
+    padding: 6px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all .2s;
+  }
+  .install .copy:hover { color: var(--fg); border-color: #444; }
+  .install-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #444;
+    margin-bottom: -4px;
+    padding-left: 4px;
+  }
+
+  /* Features */
+  .features {
+    padding: 80px 0;
+    border-top: 1px solid var(--border);
+  }
+  .features-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px 64px;
+  }
+  .feature h3 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--accent);
+  }
+  .feature p {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  /* Usage */
+  .usage {
+    padding: 0 0 80px;
+  }
+  .usage h2 {
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+    margin-bottom: 32px;
+  }
+  .code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 28px;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 14px;
+    line-height: 2;
+    overflow-x: auto;
+  }
+  .code-block .comment { color: #444; }
+  .code-block .cmd { color: var(--fg); }
+
+  /* Footer */
+  footer {
+    padding: 40px 0;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+  }
+  footer a { color: var(--muted); text-decoration: none; }
+  footer a:hover { color: var(--fg); }
+  footer .voila-footer {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  @media (max-width: 600px) {
+    .features-grid { grid-template-columns: 1fr; gap: 32px; }
+    .hero { padding: 80px 0 60px; }
+    .install { font-size: 13px; padding: 16px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <a href="/" class="logo">sitegrabber</a>
+    <div class="nav-links">
+      <a href="/docs">Docs</a>
+      <a href="https://github.com/voila-dev/sitegrabber">GitHub</a>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="container">
+    <h1>Download entire websites.</h1>
+    <p>One command. Grabs every page, every asset. Rewrites all links to work offline. Open it in a browser or deploy anywhere.</p>
+    <div class="install-group">
+      <div class="install-label">Install</div>
+      <div class="install" onclick="copyCmd(this, 'curl -fsSL https://sitegrabber.dev/install | bash')">
+        <span class="prompt">$ </span><span class="cmd">curl -fsSL https://sitegrabber.dev/install | bash</span>
+        <button class="copy">Copy</button>
+      </div>
+      <div class="install-label">Then grab a site</div>
+      <div class="install" onclick="copyCmd(this, 'sitegrabber https://example.com')">
+        <span class="prompt">$ </span><span class="cmd">sitegrabber https://example.com</span>
+        <button class="copy">Copy</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="features">
+  <div class="container">
+    <div class="features-grid">
+      <div class="feature">
+        <h3>Fast</h3>
+        <p>Async downloads with configurable concurrency. Crawls sites in seconds, not minutes.</p>
+      </div>
+      <div class="feature">
+        <h3>Complete</h3>
+        <p>HTML, CSS, JS, images, fonts, videos. Extracts URLs from href, src, srcset, CSS url(), @import.</p>
+      </div>
+      <div class="feature">
+        <h3>Works offline</h3>
+        <p>All links rewritten to relative paths. Open index.html directly or serve with any static file server.</p>
+      </div>
+      <div class="feature">
+        <h3>Single binary</h3>
+        <p>No runtime, no dependencies. One 6MB binary. Install in 5 seconds, works everywhere.</p>
+      </div>
+      <div class="feature">
+        <h3>Deploy anywhere</h3>
+        <p>Output is a clean static directory. Push to Cloudflare Pages, Netlify, GitHub Pages, or any server.</p>
+      </div>
+      <div class="feature">
+        <h3>Configurable</h3>
+        <p>Control depth, concurrency, timeout, user-agent. Include subdomains or grab assets only.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="usage">
+  <div class="container">
+    <h2>Usage</h2>
+    <div class="code-block">
+      <span class="comment"># Download a site</span><br>
+      <span class="cmd">sitegrabber https://example.com</span><br>
+      <br>
+      <span class="comment"># Custom output directory</span><br>
+      <span class="cmd">sitegrabber https://example.com -o my-mirror</span><br>
+      <br>
+      <span class="comment"># Limit depth, boost concurrency</span><br>
+      <span class="cmd">sitegrabber https://docs.example.com -d 5 -c 16</span><br>
+      <br>
+      <span class="comment"># Include subdomains</span><br>
+      <span class="cmd">sitegrabber https://example.com --include-subdomains</span>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <a href="https://github.com/voila-dev/sitegrabber">GitHub</a>
+    &nbsp;&middot;&nbsp; MIT License
+    &nbsp;&middot;&nbsp;
+  </div>
+</footer>
+
+<script>
+function copyCmd(el, cmd) {
+  navigator.clipboard.writeText(cmd).then(() => {
+    const btn = el.querySelector('.copy');
+    btn.textContent = 'Copied';
+    setTimeout(() => btn.textContent = 'Copy', 2000);
+  });
+}
+</script>
+
+</body>
+</html>

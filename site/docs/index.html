@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Documentation — sitegrabber</title>
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0a0a0a;
+    --fg: #e8e8e8;
+    --muted: #666;
+    --code-bg: #141414;
+    --border: #222;
+    --accent: #fff;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* Nav */
+  nav {
+    padding: 24px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  nav .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+  nav a { color: var(--muted); text-decoration: none; font-size: 14px; transition: color .2s; }
+  nav a:hover { color: var(--fg); }
+  .logo { font-weight: 700; font-size: 16px; color: var(--fg); text-decoration: none; letter-spacing: -0.5px; }
+  .nav-links { display: flex; align-items: center; gap: 20px; }
+  .nav-links .active { color: var(--fg); }
+
+  /* Page header */
+  .page-header {
+    padding: 80px 0 48px;
+  }
+  .page-header h1 {
+    font-size: 40px;
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+  .page-header p {
+    font-size: 17px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  /* TOC */
+  .toc {
+    padding: 0 0 48px;
+  }
+  .toc h2 {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+  .toc ul {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+  }
+  .toc a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 14px;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    transition: color .2s;
+  }
+  .toc a:hover { color: var(--fg); }
+
+  /* Sections */
+  .doc-section {
+    padding: 48px 0;
+    border-top: 1px solid var(--border);
+  }
+  .doc-section h2 {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+    margin-bottom: 32px;
+  }
+
+  /* Option card */
+  .option {
+    margin-bottom: 40px;
+  }
+  .option:last-child { margin-bottom: 0; }
+  .option-header {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+  .option-name {
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+  .option-short {
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .option-meta {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+  .option-tag {
+    font-size: 12px;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 2px 10px;
+    white-space: nowrap;
+  }
+  .option p {
+    font-size: 15px;
+    color: #aaa;
+    line-height: 1.7;
+  }
+
+  /* Code blocks */
+  .code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 24px;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 14px;
+    line-height: 1.9;
+    overflow-x: auto;
+    margin-top: 12px;
+  }
+  .code-block .comment { color: #444; }
+  .code-block .cmd { color: var(--fg); }
+
+  /* Inline code */
+  code {
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 13px;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2px 6px;
+  }
+
+  /* Footer */
+  footer {
+    padding: 40px 0;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+  }
+  footer a { color: var(--muted); text-decoration: none; }
+  footer a:hover { color: var(--fg); }
+
+  @media (max-width: 600px) {
+    .page-header { padding: 60px 0 32px; }
+    .page-header h1 { font-size: 28px; }
+    .doc-section { padding: 32px 0; }
+    .option-header { flex-direction: column; gap: 4px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <a href="/" class="logo">sitegrabber</a>
+    <div class="nav-links">
+      <a href="/docs" class="active">Docs</a>
+      <a href="https://github.com/voila-dev/sitegrabber">GitHub</a>
+    </div>
+  </div>
+</nav>
+
+<section class="page-header">
+  <div class="container">
+    <h1>Documentation</h1>
+    <p>Every option explained. Sitegrabber is a single command with sensible defaults — most of the time you just need the URL.</p>
+  </div>
+</section>
+
+<section class="toc">
+  <div class="container">
+    <h2>Options</h2>
+    <ul>
+      <li><a href="#url">URL</a></li>
+      <li><a href="#output">--output</a></li>
+      <li><a href="#depth">--depth</a></li>
+      <li><a href="#concurrency">--concurrency</a></li>
+      <li><a href="#timeout">--timeout</a></li>
+      <li><a href="#delay">--delay</a></li>
+      <li><a href="#user-agent">--user-agent</a></li>
+      <li><a href="#max-size">--max-size</a></li>
+      <li><a href="#exclude">--exclude</a></li>
+      <li><a href="#include-subdomains">--include-subdomains</a></li>
+      <li><a href="#assets-only">--assets-only</a></li>
+      <li><a href="#respect-robots">--respect-robots</a></li>
+      <li><a href="#warc">--warc</a></li>
+      <li><a href="#no-resume">--no-resume</a></li>
+      <li><a href="#verbose">--verbose</a></li>
+      <li><a href="#quiet">--quiet</a></li>
+    </ul>
+  </div>
+</section>
+
+<!-- Quick start -->
+<section class="doc-section">
+  <div class="container">
+    <h2>Quick start</h2>
+    <div class="code-block">
+      <span class="comment"># Install</span><br>
+      <span class="cmd">curl -fsSL https://sitegrabber.dev/install | bash</span><br>
+      <br>
+      <span class="comment"># Download a website</span><br>
+      <span class="cmd">sitegrabber https://example.com</span><br>
+      <br>
+      <span class="comment"># Open it offline</span><br>
+      <span class="cmd">open example.com/index.html</span>
+    </div>
+  </div>
+</section>
+
+<!-- Positional argument -->
+<section class="doc-section">
+  <div class="container">
+    <h2>Required</h2>
+
+    <div class="option" id="url">
+      <div class="option-header">
+        <span class="option-name">URL</span>
+        <span class="option-short">positional argument</span>
+      </div>
+      <div class="option-meta">
+        <span class="option-tag">required</span>
+      </div>
+      <p>The starting URL to crawl. Must include the protocol (<code>https://</code> or <code>http://</code>). The crawler will discover and download all pages and assets on the same domain, starting from this URL.</p>
+      <div class="code-block">
+        <span class="cmd">sitegrabber https://docs.example.com</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Output options -->
+<section class="doc-section">
+  <div class="container">
+    <h2>Output</h2>
+
+    <div class="option" id="output">
+      <div class="option-header">
+        <span class="option-name">--output</span>
+        <span class="option-short">-o &lt;DIR&gt;</span>
+      </div>
+      <div class="option-meta">
+        <span class="option-tag">default: domain name</span>
+      </div>
+      <p>Directory where downloaded files are saved. If not set, a directory named after the domain is created in the current folder (e.g. <code>example.com/</code>). The directory is created automatically if it doesn't exist.</p>
+      <div class="code-block">
+        <span class="cmd">sitegrabber https://example.com -o ./my-mirror</span>
+      </div>
+    </div>
+
+    <div class="option" id="warc">
+      <div class="option-header">
+        <span class="option-name">--warc</span>
+      </div>
+      <div class="option-meta">
+        <span class="option-tag">default: off</span>
+        <span class="option-tag">flag</span>
+      </div>
+      <p>Save a WARC/1.0 archive file alongside the regular file output. The WARC file contains the raw HTTP responses and is useful for web archival, compliance, or replay with tools like <code>replayweb.page</code>. The archive is saved in the output directory as <code>&lt;domain&gt;-&lt;timestamp&gt;.warc</code>.</p>
+      <div class="code-block">
+        <span class="cmd">sitegrabber https://example.com --warc</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Crawl behavior -->
+<section class="doc-section">
+  <div class="container">
+    <h2>Crawl behavior</h2>
+
+    <div class="option" id="depth">
+      <div class="option-header">
+        <span class="option-name">--depth</span>
+        <span class="option-short">-d &lt;N&gt;</span>
+      </div>
+      <div class="option-meta">
+        <span class="option-tag">default: 25</span>
+      </div>
+      <p>Maximum link depth to follow from the starting URL. Depth 1 downloads only the starting page and its direct assets. The default of 25 is effectively unlimited for most sites. Lower it to crawl just a section of a large site.</p>
+      <div class="code-block">
+        <span class="comment"># Only the homepage and one level of links</span><br>
+        <span class="cmd">sitegrabber https://example.com -d 2</span>
+      </div>
+    </div>
+
+    <div class="option" id="concurrency">
+      <div class="option-header">
+        <span class="option-name">--concurrency</span>
+        <span class="option-short">-c &lt;N&gt;</span>
+      </div>
+      <div class="option-meta">
+        <span class="option-tag">default: 8</span>
+      </div>
+      <p>Number of parallel downloads. Higher values speed up crawling but put more load on the target server. Combine with <code>--delay</code> to be polite while still downloading efficiently.</p>
+      <div class="code-block">
+        <span class="cmd">sitegrabber https://example.com -c 16</span>
+      </div>
+    </div>
+
+    <div class="option" id="delay">
+      <div class="option-header">
+        <span class="option-name">--delay</span>
+        <span class="option-short">&lt;MS&gt;</span>
+      </div>
+      <div class="option-meta">
+        <span class="option-tag">default: 100</span>
+        <span class="option-tag">milliseconds</span>
+      </div>
+      <p>Minimum delay in milliseconds between requests per download task. Acts as a rate limiter to avoid overwhelming the server. Set to <code>0</code> for maximum speed (local testing, your own sites). Each concurrent task waits independently.</p>
+      <div class="code-block">
+        <span class="comment"># Be polite — 500ms between requests</span><br>
+        <span class="cmd">sitegrabber https://example.com --delay 500</span><br>
+        <br>
+        <span class="comment"># No delay for your own site</span><br>
+        <span class="cmd">sitegrabber https://localhost:3000 --delay 0</span>
+      </div>
+    </div>
+
+    <div class="option" id="timeout">
+      <div class="option-header">
+        <span class="option-name">--timeout</span>
+        <span class="option-short">-t &lt;SECS&gt;</span>
+      </div>
+      <div class="option-meta">
+        <span class="option-tag">default: 30</span>
+        <span class="option-tag">seconds</span>
+      </div>
+      <p>HTTP request timeout for each individual request. If a page or asset takes longer than this to respond, it is skipped. Increase for slow servers or large files.</p>
+      <div class="code-block">
+        <span class="cmd">sitegrabber https://slow-site.com -t 60</span>
+      </div>
+    </div>
+
+    <div class="option" id="include-subdomains">
+      <div class="option-header">
+        <span class="option-name">--include-subdomains</span>
+      </div>
+      <div class="option-meta">
+        <span class="option-tag">default: off</span>
+        <span class="option-tag">flag</span>
+      </div>
+      <p>Also crawl and download pages on subdomains of the target. For example, if you crawl <code>example.com</code>, this will also follow links to <code>blog.example.com</code>, <code>docs.example.com</code>, etc. Assets on subdomains are always downloaded regardless of this flag.</p>
+      <div class="code-block">
+        <span class="cmd">sitegrabber https://example.com --include-subdomains</span>
+      </div>
+    </div>
+
+    <div class="option" id="assets-only">
+      <div class="option-header">
+        <span class="option-name">--assets-only</span>
+      </div>
+      <div class="option-meta">
+        <span class="option-tag">default: off</span>
+        <span class="option-tag">flag</span>
+      </div>
+      <p>Only download assets (CSS, JS, images, fonts, etc.) referenced by crawled pages. Pages themselves are downloaded but the crawler won't follow links to discover new pages. Useful if you just need the assets from a known set of pages.</p>
+      <div class="code-block">
+        <span class="cmd">sitegrabber https://example.com --assets-only</span>
+      </div>
+    </div>
+
+    <div class="option" id="respect-robots">
+      <div class="option-header">
+        <span class="option-name">--respect-robots</span>
+      </div>
+      <div class="option-meta">
+        <span class="option-tag">default: off</span>
+        <span class="option-tag">flag</span>
+      </div>
+      <p>Fetch and obey the site's <code>robots.txt</code> rules. When enabled, sitegrabber checks disallow/allow rules for its user-agent before crawling each URL. Also parses sitemap references from robots.txt to discover additional URLs.</p>
+      <div class="code-block">
+        <span class="cmd">sitegrabber https://example.com --respect-robots</span>
+      </div>
+    </div>
+
+    <div class="option" id="user-agent">
+      <div class="option-header">
+        <span class="option-name">--user-agent</span>
+        <span class="option-short">&lt;STRING&gt;</span>
+      </div>
+      <div class="option-meta">
+        <span class="option-tag">default: SiteGrabber/1.0</span>
+      </div>
+      <p>Custom User-Agent header sent with every request. Some sites serve different content based on the user-agent, or block unknown bots. Use a browser user-agent string if the site blocks the default.</p>
+      <div class="code-block">
+        <span class="cmd">sitegrabber https://example.com --user-agent "Mozilla/5.0 (compatible; MyCrawler)"</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Filtering -->
+<section class="doc-section">
+  <div class="container">
+    <h2>Filtering</h2>
+
+    <div class="option" id="exclude">
+      <div class="option-header">
+        <span class="option-name">--exclude</span>
+        <span class="option-short">&lt;PATTERN&gt;</span>
+      </div>
+      <div class="option-meta">
+        <span class="option-tag">repeatable</span>
+        <span class="option-tag">glob syntax</span>
+      </div>
+      <p>Skip URLs matching the given glob pattern. Can be specified multiple times to exclude multiple patterns. Useful for skipping admin pages, search results, or large file directories. Patterns are matched against the full URL.</p>
+      <div class="code-block">
+        <span class="comment"># Skip all PDF files and the admin section</span><br>
+        <span class="cmd">sitegrabber https://example.com --exclude "*.pdf" --exclude "*/admin/*"</span><br>
+        <br>
+        <span class="comment"># Skip query strings</span><br>
+        <span class="cmd">sitegrabber https://example.com --exclude "*?*"</span>
+      </div>
+    </div>
+
+    <div class="option" id="max-size">
+      <div class="option-header">
+        <span class="option-name">--max-size</span>
+        <span class="option-short">&lt;SIZE&gt;</span>
+      </div>
+      <div class="option-meta">
+        <span class="option-tag">optional</span>
+        <span class="option-tag">supports KB, MB, GB</span>
+      </div>
+      <p>Stop downloading after the total size of all downloaded content exceeds this limit. Accepts human-readable sizes: <code>50MB</code>, <code>1.5GB</code>, <code>512KB</code>, or plain bytes. Useful for capping bandwidth usage or storage.</p>
+      <div class="code-block">
+        <span class="comment"># Stop after downloading 100MB</span><br>
+        <span class="cmd">sitegrabber https://large-site.com --max-size 100MB</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Resume -->
+<section class="doc-section">
+  <div class="container">
+    <h2>Resume</h2>
+
+    <div class="option" id="no-resume">
+      <div class="option-header">
+        <span class="option-name">--no-resume</span>
+      </div>
+      <div class="option-meta">
+        <span class="option-tag">default: off (resume is enabled)</span>
+        <span class="option-tag">flag</span>
+      </div>
+      <p>By default, sitegrabber keeps a <code>.sitegrabber-state</code> file in the output directory tracking which URLs have been downloaded. If the crawl is interrupted, re-running the same command resumes where it left off. Use <code>--no-resume</code> to force a fresh crawl from scratch, ignoring any existing state.</p>
+      <div class="code-block">
+        <span class="comment"># Force re-download everything</span><br>
+        <span class="cmd">sitegrabber https://example.com --no-resume</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Verbosity -->
+<section class="doc-section">
+  <div class="container">
+    <h2>Verbosity</h2>
+
+    <div class="option" id="verbose">
+      <div class="option-header">
+        <span class="option-name">--verbose</span>
+        <span class="option-short">-v</span>
+      </div>
+      <div class="option-meta">
+        <span class="option-tag">flag</span>
+      </div>
+      <p>Log every request with status code, URL, and file size. Useful for debugging which pages are being downloaded and spotting errors. Cannot be used together with <code>--quiet</code>.</p>
+      <div class="code-block">
+        <span class="cmd">sitegrabber https://example.com -v</span>
+      </div>
+    </div>
+
+    <div class="option" id="quiet">
+      <div class="option-header">
+        <span class="option-name">--quiet</span>
+        <span class="option-short">-q</span>
+      </div>
+      <div class="option-meta">
+        <span class="option-tag">flag</span>
+      </div>
+      <p>Suppress all output except errors. No progress bar, no summary. Useful for scripts and CI pipelines. Cannot be used together with <code>--verbose</code>.</p>
+      <div class="code-block">
+        <span class="cmd">sitegrabber https://example.com -q</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Examples -->
+<section class="doc-section">
+  <div class="container">
+    <h2>Examples</h2>
+
+    <div class="code-block">
+      <span class="comment"># Basic site download</span><br>
+      <span class="cmd">sitegrabber https://example.com</span><br>
+      <br>
+      <span class="comment"># Mirror a docs site with fast settings</span><br>
+      <span class="cmd">sitegrabber https://docs.example.com -c 16 --delay 0 -o docs-mirror</span><br>
+      <br>
+      <span class="comment"># Archive a site with WARC output</span><br>
+      <span class="cmd">sitegrabber https://example.com --warc -o archive</span><br>
+      <br>
+      <span class="comment"># Polite crawl respecting robots.txt</span><br>
+      <span class="cmd">sitegrabber https://example.com --respect-robots --delay 500</span><br>
+      <br>
+      <span class="comment"># Shallow crawl, skip large files</span><br>
+      <span class="cmd">sitegrabber https://example.com -d 3 --max-size 50MB</span><br>
+      <br>
+      <span class="comment"># Exclude patterns</span><br>
+      <span class="cmd">sitegrabber https://example.com --exclude "*.pdf" --exclude "*/tag/*"</span><br>
+      <br>
+      <span class="comment"># Resume an interrupted crawl</span><br>
+      <span class="cmd">sitegrabber https://example.com -o my-site</span><br>
+      <span class="comment"># (just run the same command again)</span><br>
+      <br>
+      <span class="comment"># Include subdomains + verbose</span><br>
+      <span class="cmd">sitegrabber https://example.com --include-subdomains -v</span>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <a href="/">Home</a>
+    &nbsp;&middot;&nbsp;
+    <a href="https://github.com/voila-dev/sitegrabber">GitHub</a>
+    &nbsp;&middot;&nbsp; MIT License
+  </div>
+</footer>
+
+</body>
+</html>
